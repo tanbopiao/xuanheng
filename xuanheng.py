@@ -5,12 +5,12 @@
 
 工程映射：择优推演，生成笺稿上交勘判。
 
-边界：本件为算子骨架 v0——接口先立、实现随进化轮补齐；遵循元法第四条「只增不覆盖」，
+边界：本件为算子 v1——骨架桩已按命名映射补齐实现；遵循元法第四条「只增不覆盖」，
 方法只增不改名不删，行为变更走新版本；凭据不入档，宣称与事实分离。
 """
 
 class Xuanheng:
-    """璇衡（XUANHENG）算子骨架 v0。"""
+    """璇衡（XUANHENG）算子 v1。"""
 
     ANCHOR = "Ω₀⊂⊙∞⊂Ω｜DID-BR-000002"
     CODE = "XUANHENG"
@@ -18,6 +18,8 @@ class Xuanheng:
     def __init__(self, config=None):
         self.config = dict(config or {})
         self.events = []  # 只增不覆盖：会话内事件留痕
+        self.jiancao_box = []
+        self._seq = 0
 
     def describe(self):
         """构件名帖：名、代号、职责、铭文、体系锚。"""
@@ -31,9 +33,17 @@ class Xuanheng:
         }
 
     def propose(self, candidates):
-        """对候选笺稿排序择优，返回排序后清单（骨架桩：实现随进化轮补齐）。"""
-        raise NotImplementedError("XUANHENG.propose 骨架桩，候进化轮补齐")
+        """璇衡推演：择优出笺。"""
+        if not candidates:
+            raise ValueError("无候选可推演")
+        ranked = sorted(candidates, key=lambda c: -(c.get("score", 0) if isinstance(c, dict) else 0))
+        self.events.append({"event": "propose", "candidates": len(candidates)})
+        return {"best": ranked[0], "ranked": ranked}
 
     def submit_jiancao(self, draft):
-        """把择优笺稿上呈玄圭勘判；骨架期只登记不上呈（骨架桩：实现随进化轮补齐）。"""
-        raise NotImplementedError("XUANHENG.submit_jiancao 骨架桩，候进化轮补齐")
+        """择优上呈：笺稿入勘。"""
+        self._seq += 1
+        jid = "JC-%04d" % self._seq
+        self.jiancao_box.append({"jiancao_id": jid, "draft": draft, "status": "submitted"})
+        self.events.append({"event": "submit_jiancao", "jiancao_id": jid})
+        return jid
